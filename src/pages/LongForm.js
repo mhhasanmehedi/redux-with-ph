@@ -1,30 +1,12 @@
 import React, { useReducer } from "react";
+import { initialState, reducer } from "../state/formReducer";
 
 const LongForm = () => {
-  const initialState = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    gender: "",
-    education: "",
-    quantity: 0,
-    feedback: "",
-    term: true,
-  };
-
-  const reducer = (state, action) => {
-    if (action.type === "INPUT") {
-      return {
-        ...state,
-        [action.payload.name]: action.payload.value,
-      };
-    }
-  };
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const submit = (event) => {
     event.preventDefault();
+    console.log(state);
   };
 
   return (
@@ -170,13 +152,19 @@ const LongForm = () => {
           <div className="flex flex-col w-full max-w-xs">
             <label className="mb-3">Number of PCs</label>
             <div className="flex justify-between items-center gap-2 ">
-              <button className="bg-indigo-500 text-lg text-white rounded h-10 w-10 ">
+              <button
+                onClick={() => dispatch({ type: "DECREMENT" })}
+                className="bg-indigo-500 text-lg text-white rounded h-10 w-10 "
+              >
                 -
               </button>
               <div className="border flex-1 flex justify-center items-center h-10 rounded-md border-gray-300">
-                <span className="text-lg">0</span>
+                <span className="text-lg">{state.quantity}</span>
               </div>
-              <button className="bg-indigo-500 text-lg text-white rounded h-10 w-10">
+              <button
+                onClick={() => dispatch({ type: "INCREMENT" })}
+                className="bg-indigo-500 text-lg text-white rounded h-10 w-10"
+              >
                 +
               </button>
             </div>
@@ -190,17 +178,30 @@ const LongForm = () => {
               id="feedback"
               cols="30"
               rows="4"
+              onChange={(e) =>
+                dispatch({
+                  type: "INPUT",
+                  payload: { name: e.target.name, value: e.target.value },
+                })
+              }
             ></textarea>
           </div>
 
           <div className="flex justify-between items-center w-full">
             <div className="flex  w-full max-w-xs">
-              <input className="mr-3" type="checkbox" name="term" id="terms" />
+              <input
+                className="mr-3"
+                type="checkbox"
+                name="term"
+                id="terms"
+                onClick={() => dispatch({ type: "TOGGLE" })}
+              />
               <label htmlFor="terms">I agree to terms and conditions</label>
             </div>
             <button
               className=" px-4 py-3 bg-indigo-500 rounded-md font-semibold text-white text-lg disabled:bg-gray-500"
               type="submit"
+              disabled={!state.term}
             >
               Submit
             </button>
@@ -222,6 +223,7 @@ const LongForm = () => {
         <br />
         Quantity: {state.quantity}
         <br />
+        Term: {state.term ? "True" : "False"}
       </div>
     </>
   );
